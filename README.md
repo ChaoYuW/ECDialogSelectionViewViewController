@@ -1,0 +1,2 @@
+# ECDialogSelectionViewViewController
+支持单选多选。多选时返回的数据顺序为数据源顺序。
