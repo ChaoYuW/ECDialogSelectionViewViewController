@@ -17,6 +17,8 @@
 		E5F72AED25BD3560009C6FBF /* UIViewController+ECPopover.m in Sources */ = {isa = PBXBuildFile; fileRef = E5F72AE825BD3560009C6FBF /* UIViewController+ECPopover.m */; };
 		E5F72AEE25BD3560009C6FBF /* ECSelectionTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E5F72AE925BD3560009C6FBF /* ECSelectionTableViewCell.m */; };
 		E5F72AEF25BD3560009C6FBF /* ECDialogSelectionViewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E5F72AEA25BD3560009C6FBF /* ECDialogSelectionViewViewController.m */; };
+		E5F72AF525BE6610009C6FBF /* ECPopoverAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = E5F72AF325BE6610009C6FBF /* ECPopoverAnimator.m */; };
+		E5F72AFB25BE6665009C6FBF /* ECPresentationController.m in Sources */ = {isa = PBXBuildFile; fileRef = E5F72AF925BE6665009C6FBF /* ECPresentationController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +40,11 @@
 		E5F72AEA25BD3560009C6FBF /* ECDialogSelectionViewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECDialogSelectionViewViewController.m; sourceTree = "<group>"; };
 		E5F72AEB25BD3560009C6FBF /* UIViewController+ECPopover.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+ECPopover.h"; sourceTree = "<group>"; };
 		E5F72AEC25BD3560009C6FBF /* ECSelectionTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSelectionTableViewCell.h; sourceTree = "<group>"; };
+		E5F72AF325BE6610009C6FBF /* ECPopoverAnimator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECPopoverAnimator.m; sourceTree = "<group>"; };
+		E5F72AF425BE6610009C6FBF /* ECPopoverAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECPopoverAnimator.h; sourceTree = "<group>"; };
+		E5F72AF725BE662A009C6FBF /* ECPopoverMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ECPopoverMacro.h; sourceTree = "<group>"; };
+		E5F72AF925BE6665009C6FBF /* ECPresentationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECPresentationController.m; sourceTree = "<group>"; };
+		E5F72AFA25BE6665009C6FBF /* ECPresentationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECPresentationController.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,12 +96,17 @@
 		E5F72AE625BD3560009C6FBF /* DialogSelectionViewViewController */ = {
 			isa = PBXGroup;
 			children = (
+				E5F72AF725BE662A009C6FBF /* ECPopoverMacro.h */,
+				E5F72AF425BE6610009C6FBF /* ECPopoverAnimator.h */,
+				E5F72AF325BE6610009C6FBF /* ECPopoverAnimator.m */,
+				E5F72AFA25BE6665009C6FBF /* ECPresentationController.h */,
+				E5F72AF925BE6665009C6FBF /* ECPresentationController.m */,
 				E5F72AE725BD3560009C6FBF /* ECDialogSelectionViewViewController.h */,
-				E5F72AE825BD3560009C6FBF /* UIViewController+ECPopover.m */,
-				E5F72AE925BD3560009C6FBF /* ECSelectionTableViewCell.m */,
 				E5F72AEA25BD3560009C6FBF /* ECDialogSelectionViewViewController.m */,
-				E5F72AEB25BD3560009C6FBF /* UIViewController+ECPopover.h */,
 				E5F72AEC25BD3560009C6FBF /* ECSelectionTableViewCell.h */,
+				E5F72AE925BD3560009C6FBF /* ECSelectionTableViewCell.m */,
+				E5F72AEB25BD3560009C6FBF /* UIViewController+ECPopover.h */,
+				E5F72AE825BD3560009C6FBF /* UIViewController+ECPopover.m */,
 			);
 			path = DialogSelectionViewViewController;
 			sourceTree = "<group>";
@@ -172,9 +184,11 @@
 				E5F72AEE25BD3560009C6FBF /* ECSelectionTableViewCell.m in Sources */,
 				E5F72AD425BD351F009C6FBF /* ViewController.m in Sources */,
 				E5F72AED25BD3560009C6FBF /* UIViewController+ECPopover.m in Sources */,
+				E5F72AF525BE6610009C6FBF /* ECPopoverAnimator.m in Sources */,
 				E5F72ACE25BD351F009C6FBF /* AppDelegate.m in Sources */,
 				E5F72ADF25BD3523009C6FBF /* main.m in Sources */,
 				E5F72AD125BD351F009C6FBF /* SceneDelegate.m in Sources */,
+				E5F72AFB25BE6665009C6FBF /* ECPresentationController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
