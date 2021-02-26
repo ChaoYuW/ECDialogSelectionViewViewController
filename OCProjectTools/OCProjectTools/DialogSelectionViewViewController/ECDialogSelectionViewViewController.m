@@ -14,6 +14,9 @@
 @property (strong, nonatomic) UITableView *myTableView;
 @property (assign, nonatomic) NSInteger displayNum;
 @property (nonatomic, strong) UILabel *titleLabel;
+
+@property(nonatomic,copy) void (^cancelButtonBlock)(ECDialogSelectionViewViewController *dialogViewController);
+@property(nonatomic,copy) void (^submitButtonBlock)(ECDialogSelectionViewViewController *dialogViewController);
 @end
 
 const NSInteger ECDialogSelectionViewControllerSelectedItemIndexNone = -1;
@@ -40,6 +43,7 @@ const NSInteger ECDialogSelectionViewControllerSelectedItemIndexNone = -1;
     self.titleColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
     self.titleFont = [UIFont fontWithName:@"PingFangSC" size:16];
     self.headerViewBackgroundColor = [UIColor colorWithRed:244/255.0 green:245/255.0 blue:247/255.0 alpha:1];
+    self.footerViewBackgroundColor = UIColor.whiteColor;
     self.displayNum = 10;
     self.rowHeight = 44;
     self.selectedItemIndex = ECDialogSelectionViewControllerSelectedItemIndexNone;
@@ -57,7 +61,10 @@ const NSInteger ECDialogSelectionViewControllerSelectedItemIndexNone = -1;
     [_headerView addSubview:_titleLabel];
     
     _footerView = UIView.new;
+    _footerView.backgroundColor = self.footerViewBackgroundColor;
+    _footerView.hidden = YES;
 
+    _contentView.backgroundColor = UIColor.whiteColor;
     [_contentView addSubview:_headerView];
     [_contentView addSubview:_footerView];
     
@@ -110,9 +117,36 @@ const NSInteger ECDialogSelectionViewControllerSelectedItemIndexNone = -1;
     self.myTableView.frame = CGRectMake(0, self.headerViewHeight, selfWidth, cHeight);
     
     totalHeight +=cHeight;
-    self.footerView.frame = CGRectMake(0, CGRectGetMaxY(self.myTableView.frame), selfWidth, self.footerViewHeight);
-    totalHeight +=self.footerViewHeight;
+    
+    BOOL isFooterViewShowing = self.footerView && !self.footerView.hidden;
+    
+    if(isFooterViewShowing){
+        self.footerView.frame = CGRectMake(0, CGRectGetMaxY(self.myTableView.frame), selfWidth, self.footerViewHeight);
+        totalHeight +=self.footerViewHeight;
+        
+        NSUInteger buttonCount = self.footerView.subviews.count;
+        if (buttonCount == 1) {
+            UIButton *button = self.cancelButton ? : self.submitButton;
+            button.frame = self.footerView.bounds;
+            
+//            self.buttonSeparatorLayer.hidden = YES;
+        } else {
+            CGFloat buttonWidth = ceil(CGRectGetWidth(self.footerView.bounds) / buttonCount);
+            self.cancelButton.frame = CGRectMake(0, 0, buttonWidth, CGRectGetHeight(self.footerView.bounds));
+            self.submitButton.frame = CGRectMake(CGRectGetMaxX(self.cancelButton.frame), 0, CGRectGetWidth(self.footerView.bounds) - CGRectGetMaxX(self.cancelButton.frame), CGRectGetHeight(self.footerView.bounds));
+//            self.buttonSeparatorLayer.hidden = NO;
+//            self.buttonSeparatorLayer.frame = CGRectMake(CGRectGetMaxX(self.cancelButton.frame), 0, PixelOne, CGRectGetHeight(self.footerView.bounds));
+        }
+    }else
+    {
+        totalHeight += 20;
+    }
+    
+    
     self.contentView.frame = CGRectMake(40, (selfHeight-totalHeight)*0.5, selfWidth, totalHeight);
+    
+    self.contentView.layer.cornerRadius = 10;
+    self.contentView.layer.masksToBounds = YES;
 }
 - (void)viewDidLayoutSubviews
 {
@@ -195,6 +229,9 @@ const NSInteger ECDialogSelectionViewControllerSelectedItemIndexNone = -1;
             if (self.didSelectItemBlock) {
                 self.didSelectItemBlock(self, indexPath.row);
             }
+            if (self.didDismissBlock) {
+                self.didDismissBlock();
+            }
         }
         if ([self ec_cellVisibleAtIndexPath:indexPath]) {
             [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
@@ -224,10 +261,24 @@ const NSInteger ECDialogSelectionViewControllerSelectedItemIndexNone = -1;
         if (self.didSelectItemBlock) {
             self.didSelectItemBlock(self, indexPath.row);
         }
+        if (self.didDismissBlock) {
+            self.didDismissBlock();
+        }
     }
     
 }
 
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    CGPoint point = [[touches  anyObject] locationInView:self.view];
+    point = [self.contentView.layer convertPoint:point fromLayer:self.view.layer];
+    if (![self.contentView.layer containsPoint:point]) {
+        [self hide];
+        if (self.didDismissBlock) {
+            self.didDismissBlock();
+        }
+    }
+}
 - (BOOL)ec_cellVisibleAtIndexPath:(NSIndexPath *)indexPath {
     NSArray<NSIndexPath *> *visibleCellIndexPaths = self.myTableView.indexPathsForVisibleRows;
     for (NSIndexPath *visibleIndexPath in visibleCellIndexPaths) {
@@ -237,6 +288,46 @@ const NSInteger ECDialogSelectionViewControllerSelectedItemIndexNone = -1;
     }
     return NO;
 }
+- (void)addCancelButtonWithText:(NSString *)buttonText block:(void (^ _Nullable)(__kindof ECDialogSelectionViewViewController *aDialogViewController))block
+{
+    [self removeCancelButton];
+    _cancelButton = [self generateButtonWithText:buttonText];
+    [self.cancelButton addTarget:self action:@selector(handleCancelButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.footerView.hidden = NO;
+    [self.footerView addSubview:self.cancelButton];
+    
+    self.cancelButtonBlock = block;
+}
+- (void)removeCancelButton
+{
+    [_cancelButton removeFromSuperview];
+    self.cancelButtonBlock = nil;
+    _cancelButton = nil;
+    if (!self.cancelButton && !self.submitButton) {
+        self.footerView.hidden = YES;
+    }
+}
+- (void)addSubmitButtonWithText:(NSString *)buttonText block:(void (^ _Nullable)(__kindof ECDialogSelectionViewViewController *aDialogViewController))block
+{
+    [self removeSubmitButton];
+    _submitButton = [self generateButtonWithText:buttonText];
+    [self.submitButton addTarget:self action:@selector(handleSubmitButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.footerView.hidden = NO;
+    [self.footerView addSubview:self.submitButton];
+    
+    self.submitButtonBlock = block;
+}
+- (void)removeSubmitButton
+{
+    [_submitButton removeFromSuperview];
+    self.submitButtonBlock = nil;
+    _submitButton = nil;
+    if (!self.cancelButton && !self.submitButton) {
+        self.footerView.hidden = YES;
+    }
+}
 - (void)show
 {
 
@@ -245,4 +336,29 @@ const NSInteger ECDialogSelectionViewControllerSelectedItemIndexNone = -1;
 {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
+- (void)handleCancelButtonEvent:(UIButton *)cancelButton {
+    [self hide];
+    if (self.didDismissBlock) {
+        self.didDismissBlock();
+    }
+    if (self.cancelButtonBlock) {
+        self.cancelButtonBlock(self);
+    }
+}
+- (void)handleSubmitButtonEvent:(UIButton *)submitButton {
+    if (self.submitButtonBlock) {
+        // 把自己传过去，通过参数来引用 self，避免在 block 里直接引用 dialog 导致内存泄漏
+        self.submitButtonBlock(self);
+    }
+}
+
+#pragma Private Methods
+- (UIButton *)generateButtonWithText:(NSString *)buttonText {
+    UIButton *button = UIButton.new;
+    button.titleLabel.font = [UIFont systemFontOfSize:16];
+    [button setTitle:buttonText forState:UIControlStateNormal];
+    [button setTitleColor:[UIColor colorWithRed:0 green:67/255.0 blue:208/255.0 alpha:1] forState:UIControlStateNormal];
+    return button;
+}
+
 @end
